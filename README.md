@@ -83,3 +83,8 @@ Your dynamoDB tables must have Dynamo Stream activated.
 Check your CloudWatch logs to make sure your function processes things correctly!
 
 enjoy
+
+## Debugging
+
+- If you are having trouble with `setup.cpg`, make sure you have an empty `/build` folder.<br/>
+- If you want to add a VPC with private subnets, uncomment `vpc-config` in the `create` function of the Makefile.
