@@ -61,3 +61,4 @@ venv/
 dev_es_creds
 lib/env.py
 
+.DS_Store
