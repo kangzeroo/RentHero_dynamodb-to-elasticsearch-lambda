@@ -34,6 +34,28 @@ You need to declare the following environment variables at the top of the Makefi
 
 Obvisouly you need your AWS environment setup correctly.
 
+## Kangzes Readme Portion
+In order to use this lambda, you must first put the `dev_es_creds` in your S3 bucket and it has to be pointing to your Elasticsearch endpoint. Make sure the same ES endpoint is in `/lib/env.py`. Then run the `make create/...` command. You will find your S3 bucket populated with a copy of this lambda. You will also find a Lambda function that needs to be hooked up manually from your DynamoDB tables. Be sure to also set your IAM routes to allow dynamodb stream read access and list access to this lambda function. Finally, to check that your lambda is working look at its logs.
+
+## Code Gotchas
+Inside `src/DynamoToES/index.py` line 109 is the below code. Use this to modify your ES indices on creation (AWS ElasticSearch has many limitations, one of which is the inability to use the Indices REST api. Thus when we autogenerate indices via this lambda, we may define mappings here). This is useful for defining `geo_point` mapping types.
+
+```
+es.indices.create(table,
+                      body='''{
+                                "settings": {
+                                    "index.mapping.coerce": true
+                                },
+                                "mappings": {
+                                    "renthero_intents_hit": {
+                                        "properties": {
+                                            "GEO_POINT": { "type": "geo_point" }
+                                        }
+                                    }
+                                }
+                            }''')
+```
+
 ## Create a config file
 
 Create a simple file named `{ENV}_es_creds` and put the following in it:

@@ -41,16 +41,16 @@ def lambda_handler(event, context):
 
     # Loop over the DynamoDB Stream records
     for record in event['Records']:
-        
+
         try:
-            
+
             if record['eventName'] == "INSERT":
                 insert_document(es, record)
             elif record['eventName'] == "REMOVE":
                 remove_document(es, record)
             elif record['eventName'] == "MODIFY":
                 modify_document(es, record)
-                
+
         except Exception as e:
             print("Failed to process:")
             print(json.dumps(record))
@@ -79,41 +79,52 @@ def modify_document(es, record):
              id=docId,
              doc_type=table,
              refresh=True)
-            
+
     print("Success - Updated index ID: " + docId)
-        
+
 # Process REMOVE events
 def remove_document(es, record):
     table = getTable(record)
     print("Dynamo Table: " + table)
-    
+
     docId = generateId(record)
     print("Deleting document ID: " + docId)
-    
+
     es.delete(index=table,
               id=docId,
               doc_type=table,
               refresh=True)
-    
+
     print("Successly removed")
-    
+
 # Process INSERT events
 def insert_document(es, record):
     table = getTable(record)
     print("Dynamo Table: " + table)
-    
+
     # Create index if missing
     if es.indices.exists(table) == False:
         print("Create missing index: " + table)
-        
+
         es.indices.create(table,
-                          body='{"settings": { "index.mapping.coerce": true } }')
-        
+                          body='''{
+                                    "settings": {
+                                        "index.mapping.coerce": true
+                                    },
+                                    "mappings": {
+                                        "renthero_intents_hit": {
+                                            "properties": {
+                                                "GEO_POINT": { "type": "geo_point" }
+                                            }
+                                        }
+                                    }
+                                }''')
+
         print("Index created: " + table)
 
     # Unmarshal the DynamoDB JSON to a normal JSON
     doc = json.dumps(unmarshalJson(record['dynamodb']['NewImage']))
-    
+
     print("New document to Index:")
     print(doc)
 
@@ -123,7 +134,7 @@ def insert_document(es, record):
              id=newId,
              doc_type=table,
              refresh=True)
-            
+
     print("Success - New Index ID: " + newId)
 
 # Return the dynamoDB table that received the event. Lower case it
@@ -133,11 +144,11 @@ def getTable(record):
     if m is None:
         raise Exception("Table not found in SourceARN")
     return m.group(1).lower()
-    
+
 # Generate the ID for ES. Used for deleting or updating item later
 def generateId(record):
     keys = unmarshalJson(record['dynamodb']['Keys'])
-    
+
     # Concat HASH and RANGE key with | in between
     newId = ""
     i = 0
@@ -146,7 +157,7 @@ def generateId(record):
             newId += "|"
         newId += str(value)
         i += 1
-        
+
     return newId
 
 # Unmarshal a JSON that is DynamoDB formatted
@@ -155,7 +166,7 @@ def unmarshalJson(node):
     data["M"] = node
     return unmarshalValue(data, True)
 
-# ForceNum will force float or Integer to 
+# ForceNum will force float or Integer to
 def unmarshalValue(node, forceNum=False):
     for key, value in node.items():
         if (key == "NULL"):
