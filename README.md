@@ -108,7 +108,7 @@ The first time you need to create the function in AWS Lambda. Be sure you have a
 make create/DynamoToES DESC="Process DynamoDB stream to ES"
 ```
 
-This will download your config file from S3, install all the Python packages in the `build` folder, copy over `src/DynamoDB/index.py` into the `build` folder, copy over `lib` folder into `build` folder, ZIP the whole thing, upload the ZIP file to S3 and create your Lambda function. The default is 128MB. You can change the memory of your function with the Makefile or in the console.
+This will download your config file from S3, install all the Python packages in the `build` folder. You must manually copy over `src/DynamoDB/index.py` into the `build` folder, copy over `lib` folder into `build` folder, ZIP the whole thing, upload the ZIP file to S3 and create your Lambda function. The default is 128MB. You can change the memory of your function with the Makefile or in the console.
 
 ## Update the function
 
