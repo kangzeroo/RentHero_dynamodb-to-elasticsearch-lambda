@@ -55,8 +55,31 @@ es.indices.create(table,
                                 }
                             }''')
 ```
-Note that `renthero_intents_hit` should be the name of your ElasticSearch cluster. So if you have a dev and prod cluster, you will need to make a seperate mapping for dev and prod.
+Note that `renthero_intents_hit` should be the name of your ElasticSearch cluster. So if you have a dev and prod cluster, you will need to make a seperate mapping for dev and prod. This method is a hit or miss, if you want to truely setup a `geo_point` index you will have to directly use the ElasticSearch Indices API (https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).
 
+First delete any existing mappings (`ElasticSearch Service > My Domains > renthero_intents_hit > Indices > renthero_intents_hit`) and the `DELETE` curl command (see docs above).
+
+```
+DELETE "https://search-rental-listings-prod-xxxxxxx.us-east-1.es.amazonaws.com/rental_listings_prod"
+```
+
+Then use the `PUT` curl command to add your `geo_point` index.
+
+```
+curl -X PUT "https://search-rental-listings-prod-xxxxxx.us-east-1.es.amazonaws.com/rental_listings_prod" -H 'Content-Type: application/json' -d'
+{
+"mappings": {
+                      "rental_listings_prod": {
+                          "properties": {
+                              "GEO_POINT": { "type": "geo_point" }
+                          }
+                      }
+                  }
+}
+'
+```
+
+Then start streaming data in and the rest of the fields will auto-index. We only have to do this for special `geo_point` indexes.
 
 ## Create a config file
 
