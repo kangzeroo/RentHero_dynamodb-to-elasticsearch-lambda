@@ -77,7 +77,7 @@ Just set your environment variables `ENV` correctly, name your file right, uploa
 
 ## Create the function
 
-The first time you need to create the function in AWS Lambda.
+The first time you need to create the function in AWS Lambda. Be sure you have an empty `build/` folder!
 
 ```
 make create/DynamoToES DESC="Process DynamoDB stream to ES"
