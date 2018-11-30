@@ -55,6 +55,8 @@ es.indices.create(table,
                                 }
                             }''')
 ```
+Note that `renthero_intents_hit` should be the name of your ElasticSearch cluster. So if you have a dev and prod cluster, you will need to make a seperate mapping for dev and prod.
+
 
 ## Create a config file
 
