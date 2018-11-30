@@ -1,9 +1,9 @@
 PROFILE :=
 EVENT :=
 DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-AWS_BUCKET_CODE = dynamodb-to-elasticsearch-lambda
-IAM_ROLE = arn:aws:iam::637888834967:role/DynamoDB-Elasticsearch-Lambda
-ENV = dev
+AWS_BUCKET_CODE = dynamodb-to-elasticsearch-rental-listings
+IAM_ROLE = arn:aws:iam::637888834967:role/dynamodb-to-elasticsearch-rental-listings
+ENV = prod
 
 # Helper functions
 FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
